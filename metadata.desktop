@@ -1,0 +1,16 @@
+[Desktop Entry]
+Name=Plex Activity Monitor
+Comment=Monitors plex activities
+Encoding=UTF-8
+ServiceTypes=Plasma/Applet
+Type=Service
+X-KDE-PluginInfo-Author=hpsu
+X-KDE-PluginInfo-Name=se.sarstrom.plex-activity-monitor
+X-KDE-PluginInfo-License=LGPL
+X-KDE-PluginInfo-Version=0.2
+X-KDE-PLuginInfo-Depends=
+X-KDE-PluginInfo-Website=https://github.com/hpsu/plex-activiy-plasmoid
+X-Plasma-API=declarativeappletscript
+X-Plasma-MainScript=ui/main.qml
+X-Plasma-NotificationArea=true
+X-Plasma-NotificationAreaCategory=ApplicationStatus

@@ -116,48 +116,29 @@ Item {
     Plasmoid.fullRepresentation: PlasmaExtras.ScrollArea {
         anchors.fill: parent
         ListView {
-            id: mainList
-            width: parent.width
-            focus: true
-            boundsBehavior: Flickable.StopAtBounds
             model: sessionModel
             delegate: PlasmaComponents.ListItem {
-                height: implicitHeight
-                Item {
-                    anchors.fill: parent
+                Column{
+                    spacing: 0
+                    width: parent.width
                     Image {
                         source: 'http://' + getHost() + model.thumb
-                        height: 200
                         width: parent.width
-                        anchors.left: parent.left
+                        height: Math.round(parent.width / 1.7777)
                         fillMode: Image.PreserveAspectCrop
-                        Rectangle {
-                            anchors.bottom: parent.bottom
-                            anchors.left: parent.left
-                            anchors.right: parent.right
-                            color: "#70303030"
-                            height: 30
-                            GridLayout {
-                                width: parent.width
-                                columns: 1
-                                Text {
-                                    color: '#fff'
-                                    anchors.centerIn: parent
-                                    text: model.title
-                                }
-                                ProgressBar {
-                                    value: model.viewOffset /
-                                           model.duration
-                                    anchors.left: parent.left
-                                    anchors.right: parent.right
-                                }
-                            }
-                        }
                     }
-                }
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: Qt.openUrlExternally(model.link)
+                    ProgressBar {
+                        value: model.viewOffset /
+                               model.duration
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                    }
+                    Text {
+                        color: '#fff'
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        text: model.title
+                    }
                 }
             }
         }

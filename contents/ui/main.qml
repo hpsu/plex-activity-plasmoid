@@ -77,7 +77,7 @@ Item {
         onStatusChanged: if (socket.status == WebSocket.Error) {
                             console.log('WS Error: ' + socket.errorString)
                          } else if (socket.status == WebSocket.Open) {
-                            console.log('WS Connected');
+                            requestSessions();
                          } else if (socket.status == WebSocket.Closed) {
                             console.log('WS closed');
                          }
@@ -147,6 +147,5 @@ Item {
     Component.onCompleted: {
         socket.active = true;
         plasmoid.status = PlasmaCore.Types.PassiveStatus;
-        requestSessions();
     }
 }

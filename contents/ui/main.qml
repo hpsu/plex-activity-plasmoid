@@ -61,6 +61,40 @@ Item {
         return title;
     }
 
+    function calculateHeight() {
+        return parent.width / (1280 / 720);
+    }
+
+    function parseChildProperties(model) {
+        for(var i in model._children) {
+            var childObject = model._children[i];
+            switch(childObject._elementType) {
+                case 'User':
+                    model.userName = childObject.title;
+                    model.userThumb = 'icons/account.svg';
+                    if(childObject.thumb) {
+                        model.userThumb = childObject.thumb;
+                    }
+                    break;
+                case 'TranscodeSession':
+                    model.transcodeProgress = childObject.progress + '%';
+                    break;
+                case 'Player':
+                    if(childObject.state == 'paused') {
+                        model.playIcon = 'icons/pause.svg';
+                    } else if(childObject.state == 'buffering') {
+                        model.playIcon = 'icons/buffering.svg';
+                    } else if(childObject.state == 'playing') {
+                        model.playIcon = 'icons/play.svg';
+                    } else {
+                        console.log('play status',
+                                    childObject.state);
+                    }
+                    break;
+            }
+        }
+    }
+
     function requestSessions() {
         var xhr = new XMLHttpRequest();
         xhr.timeout = 1000;
@@ -77,7 +111,19 @@ Item {
                 }
                 sessionModel.clear();
                 for(var i in reply._children) {
-                    sessionModel.append(reply._children[i]);
+                    var cont = reply._children[i],
+                        dest = {};
+                    parseChildProperties(cont);
+                    var fields = ['thumb', 'viewOffset', 'duration',
+                                  'type', 'grandparentTitle',
+                                  'parentTitle', 'index', 'title',
+                                  'parentIndex', 'year', 'userName',
+                                  'userThumb', 'transcodeProgress',
+                                  'playIcon'];
+                    for(var j in fields) {
+                        dest[fields[j]] = cont[fields[j]];
+                    }
+                    sessionModel.append(dest);
                 }
             }
         };
@@ -123,6 +169,7 @@ Item {
                          }
         active: false
     }
+    SystemPalette { id: myPalette; colorGroup: SystemPalette.Active }
 
     Plasmoid.compactRepresentation: Image {
         id: envelopeImage
@@ -134,7 +181,6 @@ Item {
         source: 'images/icon.svg'
 
         Rectangle {
-            SystemPalette { id: myPalette; colorGroup: SystemPalette.Active }
             width: envelopeImage.height * 0.5
             height: width
             color: myPalette.highlight
@@ -154,17 +200,20 @@ Item {
     }
 
     Plasmoid.fullRepresentation: PlasmaExtras.ScrollArea {
-        anchors.fill: parent
         ListView {
             model: sessionModel
             delegate: PlasmaComponents.ListItem {
                 Column{
                     spacing: 0
-                    width: parent.width
+                    anchors.left: parent.left
+                    anchors.right: parent.right
                     Image {
+                        id: imgs
                         source: 'http://' + getHost() + model.thumb
+                        asynchronous: true
                         width: parent.width
-                        height: Math.round(parent.width / 1.7777)
+                        // Hard coded because aspect calculations hang
+                        height: 225
                         fillMode: Image.PreserveAspectCrop
                     }
                     ProgressBar {
@@ -173,12 +222,24 @@ Item {
                         anchors.left: parent.left
                         anchors.right: parent.right
                     }
-                    Row {
+                    RowLayout {
                         anchors.left: parent.left
                         anchors.right: parent.right
                         Text {
-                            color: '#fff'
                             text: formatEpisodeTitle(model)
+                            color: myPalette.text
+                            anchors.fill: parent
+                            Layout.fillWidth: true
+                        }
+                        Text {
+                            color: myPalette.text
+                            anchors.top: parent.top
+                            text: model.userName
+                        }
+                        Image {
+                            source: model.userThumb
+                            Layout.preferredWidth: 40
+                            Layout.preferredHeight: 40
                         }
                     }
                 }

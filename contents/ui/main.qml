@@ -1,12 +1,14 @@
-import QtQuick 2.0
+import QtQuick 2.1
 import QtWebSockets 1.0
 import QtQuick.Controls 1.4
 import QtQuick.Layouts 1.2
 
 import org.kde.plasma.core 2.0 as PlasmaCore
+import QtQuick.Controls.Styles.Plasma 2.0 as Styles
 import org.kde.plasma.components 2.0 as PlasmaComponents
 import org.kde.plasma.extras 2.0 as PlasmaExtras
 import org.kde.plasma.plasmoid 2.0
+
 
 Item {
     id: mainItem
@@ -77,15 +79,15 @@ Item {
                     }
                     break;
                 case 'TranscodeSession':
-                    model.transcodeProgress = childObject.progress + '%';
+                    model.transcodeProgress = childObject.progress / 100;
                     break;
                 case 'Player':
                     if(childObject.state == 'paused') {
-                        model.playIcon = 'icons/pause.svg';
+                        model.playStateIcon = 'media-playback-pause';
                     } else if(childObject.state == 'buffering') {
-                        model.playIcon = 'icons/buffering.svg';
+                        model.playStateIcon = 'icons/buffering.svg';
                     } else if(childObject.state == 'playing') {
-                        model.playIcon = 'icons/play.svg';
+                        model.playStateIcon = 'media-playback-start';
                     } else {
                         console.log('play status',
                                     childObject.state);
@@ -119,7 +121,7 @@ Item {
                                   'parentTitle', 'index', 'title',
                                   'parentIndex', 'year', 'userName',
                                   'userThumb', 'transcodeProgress',
-                                  'playIcon'];
+                                  'playStateIcon'];
                     for(var j in fields) {
                         dest[fields[j]] = cont[fields[j]];
                     }
@@ -215,11 +217,37 @@ Item {
                         height: 225
                         fillMode: Image.PreserveAspectCrop
                     }
-                    ProgressBar {
-                        value: model.viewOffset /
-                               model.duration
-                        anchors.left: parent.left
-                        anchors.right: parent.right
+                    RowLayout {
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    PlasmaCore.IconItem {
+                        id: pticon
+                        height: 10
+                        width: 10
+                        source: model.playStateIcon
+                    }
+
+                    Rectangle {
+                        color: myPalette.dark
+                        height: 10
+                        Layout.fillWidth: true
+
+                        Rectangle {
+                            anchors.top: parent.top
+                            anchors.bottom: parent.bottom
+                            anchors.left: parent.left
+                            color: myPalette.mid
+                            width: parent.width * model.transcodeProgress
+                        }
+                        Rectangle {
+                            color: myPalette.highlight
+                            anchors.top: parent.top
+                            anchors.bottom: parent.bottom
+                            anchors.left: parent.left
+                            width: parent.width * (model.viewOffset /
+                                                   model.duration)
+                        }
+                    }
                     }
                     RowLayout {
                         anchors.left: parent.left

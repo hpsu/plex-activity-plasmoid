@@ -132,7 +132,6 @@ Item {
         xhr.setRequestHeader('Accept', 'application/json');
 
         try {
-            console.log('XHR send');
             xhr.send();
         }
         catch (e){

@@ -182,6 +182,14 @@ Item {
         }
     }
 
+    function getColoredIcon(color) {
+        return 'data:image/svg+xml;utf8,<svg ' +
+               'xmlns="http://www.w3.org/2000/svg" width="32" height="32" ' +
+               'viewBox="0 0 32 32"><path ' +
+               'd="m9.5 4.4 6.8 11.8-6.6 11.5 6.2 0L22.5 16.1 15.7 4.4Z" ' +
+               'style="fill:' + String(color).replace('#', '%23') +
+               ';"/></svg>';
+    }
 
     WebSocket {
         id: socket
@@ -220,7 +228,7 @@ Item {
         anchors.fill: parent
         sourceSize.height: envelopeImage.height
         sourceSize.width: envelopeImage.width
-        source: 'images/icon.svg'
+        source: getColoredIcon(myPalette.text)
 
         Rectangle {
             width: envelopeImage.height * 0.5

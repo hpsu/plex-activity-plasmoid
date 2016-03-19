@@ -68,12 +68,14 @@ Item {
     }
 
     function parseChildProperties(model) {
+        model.userThumb = '';
+        model.userName = 'anonymous';
+
         for(var i in model._children) {
             var childObject = model._children[i];
             switch(childObject._elementType) {
                 case 'User':
                     model.userName = childObject.title;
-                    model.userThumb = 'icons/account.svg';
                     if(childObject.thumb) {
                         model.userThumb = childObject.thumb;
                     }
@@ -115,6 +117,7 @@ Item {
                 for(var i in reply._children) {
                     var cont = reply._children[i],
                         dest = {};
+
                     parseChildProperties(cont);
                     var fields = ['thumb', 'viewOffset', 'duration',
                                   'type', 'grandparentTitle',
@@ -268,12 +271,20 @@ Item {
                         Text {
                             color: myPalette.text
                             anchors.top: parent.top
+                            anchors.bottom: parent.bottom
                             text: model.userName
                         }
                         Image {
                             source: model.userThumb
                             Layout.preferredWidth: 40
                             Layout.preferredHeight: 40
+                            visible: model.userThumb.length
+                        }
+                        PlasmaCore.IconItem {
+                            source: 'user'
+                            Layout.preferredWidth: 40
+                            Layout.preferredHeight: 40
+                            visible: !model.userThumb.length
                         }
                     }
                 }

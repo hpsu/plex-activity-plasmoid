@@ -221,43 +221,43 @@ Item {
                         fillMode: Image.PreserveAspectCrop
                     }
                     RowLayout {
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    PlasmaCore.IconItem {
-                        id: pticon
-                        height: 10
-                        width: 10
-                        source: model.playStateIcon
-                        visible: model.playStateIcon !== 'buffering'
-                    }
-                    BusyIndicator {
-                        height: 10
-                        width: 10
-                        running: model.playStateIcon === 'buffering'
-                        visible: model.playStateIcon === 'buffering'
-                    }
-
-                    Rectangle {
-                        color: myPalette.dark
-                        height: 10
-                        Layout.fillWidth: true
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        PlasmaCore.IconItem {
+                            id: pticon
+                            height: 10
+                            width: 10
+                            source: model.playStateIcon
+                            visible: model.playStateIcon !== 'buffering'
+                        }
+                        BusyIndicator {
+                            height: 10
+                            width: 10
+                            running: model.playStateIcon === 'buffering'
+                            visible: model.playStateIcon === 'buffering'
+                        }
 
                         Rectangle {
-                            anchors.top: parent.top
-                            anchors.bottom: parent.bottom
-                            anchors.left: parent.left
-                            color: myPalette.mid
-                            width: parent.width * model.transcodeProgress
+                            color: myPalette.dark
+                            height: 10
+                            Layout.fillWidth: true
+
+                            Rectangle {
+                                anchors.top: parent.top
+                                anchors.bottom: parent.bottom
+                                anchors.left: parent.left
+                                color: myPalette.mid
+                                width: parent.width * model.transcodeProgress
+                            }
+                            Rectangle {
+                                color: myPalette.highlight
+                                anchors.top: parent.top
+                                anchors.bottom: parent.bottom
+                                anchors.left: parent.left
+                                width: parent.width * (model.viewOffset /
+                                                       model.duration)
+                            }
                         }
-                        Rectangle {
-                            color: myPalette.highlight
-                            anchors.top: parent.top
-                            anchors.bottom: parent.bottom
-                            anchors.left: parent.left
-                            width: parent.width * (model.viewOffset /
-                                                   model.duration)
-                        }
-                    }
                     }
                     RowLayout {
                         anchors.left: parent.left

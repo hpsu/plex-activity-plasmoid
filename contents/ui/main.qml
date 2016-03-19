@@ -302,7 +302,12 @@ Item {
             }
         }
     }
-
+    Connections {
+        target: theme
+        onThemeChanged: {
+            myPalette.colorGroup = SystemPalette.Active;
+        }
+    }
     Component.onCompleted: {
         socket.active = true;
         plasmoid.status = PlasmaCore.Types.PassiveStatus;

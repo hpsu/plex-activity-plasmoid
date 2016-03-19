@@ -85,7 +85,7 @@ Item {
                     if(childObject.state == 'paused') {
                         model.playStateIcon = 'media-playback-pause';
                     } else if(childObject.state == 'buffering') {
-                        model.playStateIcon = 'icons/buffering.svg';
+                        model.playStateIcon = 'buffering';
                     } else if(childObject.state == 'playing') {
                         model.playStateIcon = 'media-playback-start';
                     } else {
@@ -225,6 +225,13 @@ Item {
                         height: 10
                         width: 10
                         source: model.playStateIcon
+                        visible: model.playStateIcon !== 'buffering'
+                    }
+                    BusyIndicator {
+                        height: 10
+                        width: 10
+                        running: model.playStateIcon === 'buffering'
+                        visible: model.playStateIcon === 'buffering'
                     }
 
                     Rectangle {

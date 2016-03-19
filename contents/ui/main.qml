@@ -63,10 +63,6 @@ Item {
         return title;
     }
 
-    function calculateHeight() {
-        return parent.width / (1280 / 720);
-    }
-
     function parseChildProperties(model) {
         model.userThumb = '';
         model.userName = 'anonymous';

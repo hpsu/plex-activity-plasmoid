@@ -13,6 +13,7 @@ import org.kde.plasma.plasmoid 2.0
 Item {
     id: mainItem
     property string badgeText: '0'
+    property var sessions: ({})
 
     ListModel {
         id: sessionModel
@@ -95,6 +96,20 @@ Item {
         }
     }
 
+    function remapListIndicies() {
+        for(var i = 0; i < sessionModel.count; i++) {
+            var cont = sessionModel.get(i);
+            if(sessions[cont.sessionKey]) {
+                if(sessions[cont.sessionKey].listKey != i) {
+                    console.log('Remup',sessions[cont.sessionKey].listKey, i);
+                }
+
+                sessions[cont.sessionKey].listKey = i;
+            }
+        }
+    }
+
+
     function requestSessions() {
         var xhr = new XMLHttpRequest();
         xhr.timeout = 1000;
@@ -109,10 +124,17 @@ Item {
                 } else {
                     plasmoid.status = PlasmaCore.Types.PassiveStatus;
                 }
-                sessionModel.clear();
+                var gc = [];
+                remapListIndicies();
+
                 for(var i in reply._children) {
                     var cont = reply._children[i],
                         dest = {};
+
+                    if(sessions[cont.sessionKey]) {
+                        cont.listKey = sessions[cont.sessionKey].listKey;
+                        dest = sessionModel.get(cont.listKey);
+                    }
 
                     parseChildProperties(cont);
                     var fields = ['thumb', 'viewOffset', 'duration',
@@ -120,11 +142,23 @@ Item {
                                   'parentTitle', 'index', 'title',
                                   'parentIndex', 'year', 'userName',
                                   'userThumb', 'transcodeProgress',
-                                  'playStateIcon'];
+                                  'playStateIcon', 'sessionKey'];
                     for(var j in fields) {
                         dest[fields[j]] = cont[fields[j]];
                     }
-                    sessionModel.append(dest);
+                    if(!sessions[cont.sessionKey]) {
+                        cont.listKey = sessionModel.count;
+                        sessionModel.append(dest);
+                    }
+                    gc.push(cont.sessionKey);
+                    sessions[cont.sessionKey] = cont;
+                }
+
+                for(var j in sessions) {
+                    if(gc.indexOf(j) === -1) {
+                        sessionModel.remove(sessions[j].listKey);
+                        delete sessions[j];
+                    }
                 }
             }
         };

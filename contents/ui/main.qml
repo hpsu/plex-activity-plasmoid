@@ -64,6 +64,9 @@ Item {
         return title;
     }
 
+    /**
+     * Collect model data from child properties
+     */
     function parseChildProperties(model) {
         model.userThumb = '';
         model.userName = 'anonymous';
@@ -96,15 +99,63 @@ Item {
         }
     }
 
+    /**
+     * Remap listKeys. Items may have been moved around
+     */
     function remapListIndicies() {
         for(var i = 0; i < sessionModel.count; i++) {
             var cont = sessionModel.get(i);
             if(sessions[cont.sessionKey]) {
-                if(sessions[cont.sessionKey].listKey != i) {
-                    console.log('Remup',sessions[cont.sessionKey].listKey, i);
-                }
-
                 sessions[cont.sessionKey].listKey = i;
+            }
+        }
+    }
+
+    function processSessions(reply) {
+        badgeText = String(reply._children.length);
+
+        if (reply._children.length > 0) {
+            plasmoid.status = PlasmaCore.Types.ActiveStatus;
+        } else {
+            plasmoid.status = PlasmaCore.Types.PassiveStatus;
+        }
+        var gc = [];
+        remapListIndicies();
+
+        for(var i in reply._children) {
+            var cont = reply._children[i],
+                dest = {};
+
+            if(sessions[cont.sessionKey]) {
+                cont.listKey = sessions[cont.sessionKey].listKey;
+                dest = sessionModel.get(cont.listKey);
+            }
+
+            parseChildProperties(cont);
+            if(!cont.viewOffset) {
+                cont.viewOffset = '0';
+            }
+            var fields = ['thumb', 'viewOffset', 'duration',
+                          'type', 'grandparentTitle',
+                          'parentTitle', 'index', 'title',
+                          'parentIndex', 'year', 'userName',
+                          'userThumb', 'transcodeProgress',
+                          'playStateIcon', 'sessionKey'];
+            for(var j in fields) {
+                dest[fields[j]] = cont[fields[j]];
+            }
+            if(!sessions[cont.sessionKey]) {
+                cont.listKey = sessionModel.count;
+                sessionModel.append(dest);
+            }
+            gc.push(cont.sessionKey);
+            sessions[cont.sessionKey] = cont;
+        }
+
+        for(var j in sessions) {
+            if(gc.indexOf(j) === -1) {
+                sessionModel.remove(sessions[j].listKey);
+                delete sessions[j];
             }
         }
     }
@@ -114,52 +165,9 @@ Item {
         var xhr = new XMLHttpRequest();
         xhr.timeout = 1000;
 
-        xhr.onreadystatechange = function(r){
+        xhr.onreadystatechange = function(){
             if (xhr.readyState == XMLHttpRequest.DONE) {
-                var reply = JSON.parse(xhr.responseText);
-                badgeText = String(reply._children.length);
-
-                if (reply._children.length > 0) {
-                    plasmoid.status = PlasmaCore.Types.ActiveStatus;
-                } else {
-                    plasmoid.status = PlasmaCore.Types.PassiveStatus;
-                }
-                var gc = [];
-                remapListIndicies();
-
-                for(var i in reply._children) {
-                    var cont = reply._children[i],
-                        dest = {};
-
-                    if(sessions[cont.sessionKey]) {
-                        cont.listKey = sessions[cont.sessionKey].listKey;
-                        dest = sessionModel.get(cont.listKey);
-                    }
-
-                    parseChildProperties(cont);
-                    var fields = ['thumb', 'viewOffset', 'duration',
-                                  'type', 'grandparentTitle',
-                                  'parentTitle', 'index', 'title',
-                                  'parentIndex', 'year', 'userName',
-                                  'userThumb', 'transcodeProgress',
-                                  'playStateIcon', 'sessionKey'];
-                    for(var j in fields) {
-                        dest[fields[j]] = cont[fields[j]];
-                    }
-                    if(!sessions[cont.sessionKey]) {
-                        cont.listKey = sessionModel.count;
-                        sessionModel.append(dest);
-                    }
-                    gc.push(cont.sessionKey);
-                    sessions[cont.sessionKey] = cont;
-                }
-
-                for(var j in sessions) {
-                    if(gc.indexOf(j) === -1) {
-                        sessionModel.remove(sessions[j].listKey);
-                        delete sessions[j];
-                    }
-                }
+                processSessions(JSON.parse(xhr.responseText));
             }
         };
 

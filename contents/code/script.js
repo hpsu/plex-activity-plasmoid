@@ -1,5 +1,4 @@
-var sessions = {},
-    badgeText = '0';
+var sessions = {};
 
 function getTest() {
     console.log(JSON.stringify(sessions));
@@ -194,7 +193,7 @@ function onWsStatusChange(socket) {
     }
 }
 
-    function getHost() {
-        return plasmoid.configuration.serverHost + ':' +
-               plasmoid.configuration.serverPort;
-    }
+function getHost() {
+    return plasmoid.configuration.serverHost + ':' +
+           plasmoid.configuration.serverPort;
+}

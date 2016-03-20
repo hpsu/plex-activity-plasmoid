@@ -2,8 +2,6 @@ import QtQuick 2.1
 import org.kde.plasma.core 2.0 as PlasmaCore
 
 Item {
-    id: cpt
-
     function getColoredIcon(color) {
         return 'data:image/svg+xml;utf8,<svg ' +
                'xmlns="http://www.w3.org/2000/svg" width="32" height="32" ' +

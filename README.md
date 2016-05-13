@@ -1,4 +1,4 @@
-Plex Activiy Monitor
+Plex Activiy Monitor Plasmoid
 ===
 Shows current activities on a plex server.
 

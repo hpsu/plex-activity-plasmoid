@@ -16,7 +16,6 @@ Item {
         }
         QtControls.TextField {
             id: serverHostField
-            text: i18n("Show application and system notifications")
         }
 
         QtControls.Label {
@@ -24,7 +23,6 @@ Item {
         }
         QtControls.TextField {
             id: serverPortField
-            text: i18n("Track file transfers and other jobs")
         }
     }
 }

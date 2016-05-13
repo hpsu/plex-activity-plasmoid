@@ -24,6 +24,14 @@ Item {
         active: true
     }
 
+    Timer {
+        id: wsReconnectTimer
+        interval: 5000
+        onTriggered: {
+            socket.active = true;
+        }
+    }
+
     SystemPalette { id: myPalette; colorGroup: SystemPalette.Active }
 
     Plasmoid.compactRepresentation: CompactRepresentation {}

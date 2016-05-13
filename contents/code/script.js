@@ -188,7 +188,8 @@ function onWsStatusChange(socket) {
             requestSessions();
             break;
         case WebSocket.Closed:
-            console.log('WS closed');
+            socket.active = false;
+            wsReconnectTimer.start();
             break;
     }
 }
